@@ -3,7 +3,7 @@
     "description": "TimeZeroPW client",
     "author": "ravoit",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "./main.js",
     "build": {
         "appId": "pw.timezero",

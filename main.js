@@ -81,7 +81,7 @@ function selectTZdir() {
 app.on('ready', function() {
 	autoUpdater.checkForUpdatesAndNotify();
     if (!store.has('tzdir')) {
-        if (false && fs.existsSync('C:\\Program Files (x86)\\TimeZero\\')) {
+        if (fs.existsSync('C:\\Program Files (x86)\\TimeZero\\')) {
             store.set('tzdir', 'C:\\Program Files (x86)\\TimeZero\\');
         } else if (false && fs.existsSync('C:\\Program Files\\TimeZero\\')) {
             store.set('tzdir', 'C:\\Program Files\\TimeZero\\');
