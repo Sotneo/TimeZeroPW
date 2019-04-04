@@ -1,0 +1,35 @@
+{
+    "name": "TimeZeroPW",
+    "description": "TimeZeroPW client",
+    "author": "ravoit",
+    "license": "MIT",
+    "version": "1.0.0",
+    "main": "./main.js",
+    "build": {
+        "appId": "pw.timezero",
+        "productName": "TimeZeroPW client",
+        "extraFiles": "game/**/*",
+        "files": "!lib/",
+        "win": {
+            "extraResources": "lib/pepflashplayer32.dll",
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "ia32"
+                    ]
+                }
+            ]
+        }
+    },
+    "devDependencies": {
+        "electron": "^4.1.3",
+        "electron-builder": "^20.39.0"
+    },
+    "dependencies": {
+        "electron-store": "^3.1.0",
+        "electron-updater": "^4.0.6",
+        "finalhandler": "^1.1.1",
+        "serve-static": "^1.13.2"
+    }
+}

@@ -1,0 +1,126 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>TimeZero. online игра нового поколения</title>
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+	<link rel="stylesheet" type="text/css" href="css/skin.css" />
+	<script type="text/javascript" src="js/swfobject.js"></script>
+	<script type="text/javascript" src="js/lng/lng.ru.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+	<script type="text/javascript" src="js/tz.js"></script>
+	<script type="text/javascript" src="js/cb.js"></script>
+	<script type="text/javascript" src="js/c2.js"></script>
+</head>
+<body oncontextmenu="return OpenMenu(event);" scroll="no">
+
+<div id="layot">
+
+<table class="main-container">
+<tr>
+	<td colspan="2" id="tz-flash-container">
+		<div class="overflow-container" id="tz-flash">
+			<embed id="tz" width="1004" height="440" flashvars="language=ru" allowscriptaccess="always" swliveconnect="true" quality="best" bgcolor="#333333" src="tz.swf?vers=59" name="tz" type="application/x-shockwave-flash"/>
+			<script type="text/javascript">
+				var so = new SWFObject("tz.swf?vers=" + vers, "tz", "1004", "440", "8", "#333333");
+				so.addParam("swLiveConnect", "true");
+				so.addParam("allowScriptAccess", "always");
+				so.addVariable("language", lang);
+				so.addVariable("WORLD_ID", 1);
+
+				if(document.URL.indexOf("reg=1")!=-1) {
+					so.addVariable("regscreen", "1");
+				}
+
+				if (reg_url && reg_url['login'] && reg_url['password']) {
+					so.addVariable("root_login", reg_url['login']);
+					so.addVariable("root_password", reg_url['password']);
+				}
+
+				var mpop = GetCookie("Mpop");
+				if (mpop) {
+					so.addVariable("Mpop", mpop);
+				}
+				
+				const params = new URLSearchParams(location.search);
+				
+				if(params.has('login')){
+					so.addVariable("playid_id", params.get('login'));
+					so.addVariable("playid_key", params.get('password'));
+				}
+				
+				so.write("tz-flash");
+				
+				document.addEventListener('visibilitychange', function() {
+					if (!document.hidden) {
+						document.querySelector('html').style.width = "99.9%";
+				
+						setTimeout(function() {
+							document.querySelector('html').style.width = "100%";
+						}, 1000);
+					}
+				});
+			</script>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td id="chat1-container">
+		<div class="overflow-container" id="chat1">&#160;</div>
+	</td>
+	<td rowspan="2" id="chat-list-container">
+		<div class="overflow-container" id="chat-list">&#160;</div>
+	</td>
+</tr>
+<tr>
+	<td id="chat2-container">
+		<div class="overflow-container" id="chat2">&#160;</div>
+	</td>
+</tr>
+<tr>
+	<td colspan="2" id="cmd">
+		<form id="F1" onsubmit="return subm();" style="visibility:hidden;" >
+			<table>
+				<tr alt="" title="" >
+					<td><img src="i/b___scan_0.gif" class="imgh" id="b___scan" onclick="show_scans()" width="34" height="32" /></td>
+					<td width="100%"><input type="text" class="field" name="text" maxlength="240" size="80" height="32" /></td>
+					<td class="icons"><input type="image" src="i/b___ok.gif" width="49" height="32" id="b___ok" onfocus="blur()"/>
+					<img src="i/b___break.gif" width="6" height="32" />
+					<img src="i/b___smile.gif" width="41" height="32" id="b___smile" onclick="smiles()" />
+					<img src="i/b___clear.gif" width="40" height="32" id="b___clear" onclick="clearc()" />
+					<img src="i/b___filter.gif" width="40" height="32" id="b___filter" onclick="sw_filter()" />
+					<img src="i/b___translit_off.gif" width="40" height="32" id="b___translit" onclick="sw_translit()" />
+					<img src="i/b___cmd.gif" width="40" height="32" id="b___cmd" onclick="cmd()" />
+					<img src="i/b___sort.gif" width="41" height="32" id="b___sort" onclick="sw_sort()" />
+					<img src="i/b___break.gif" width="6" height="32" />
+					<img src="i/exit.gif" width="49" height="32" id="b__exit" onclick="do_exit()" />
+					<img src="i/b___r.gif" width="12" height="32" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</td>
+</tr>
+</table>
+
+<script type="text/javascript">
+fWindowLoad();
+</script>
+
+<div id="popup"></div>
+<div id="oMenu"></div>
+
+</div>
+
+<div id="key">
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="//fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="1" height="1">
+<param name="movie" value="key.swf" />
+<embed src="key.swf" width="1" height="1" type="application/x-shockwave-flash" pluginspage="//www.macromedia.com/go/getflashplayer" />
+</object>
+<!-- </body> -->
+</div>
+
+<iframe name="login" style="display:none;"></iframe>
+	
+
+</body>
+</html>
