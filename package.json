@@ -7,7 +7,7 @@
     "main": "./main.js",
     "build": {
         "appId": "pw.timezero",
-        "productName": "TimeZeroPW client",
+        "productName": "TimeZeroPW",
         "extraFiles": "game/**/*",
         "files": "!lib/",
         "win": {
