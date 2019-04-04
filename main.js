@@ -16,7 +16,7 @@ const Store = require('electron-store');
 const store = new Store();
 const { autoUpdater } = require("electron-updater")
 
-const serveFiles = ["/game.ru.html", "/servers.xml", "/logreader.swf", "/logreader.html", "/js/tz.js"];
+const serveFiles = ["/", "/servers.xml", "/logreader.swf", "/logreader.html", "/js/tz.js"];
 
 function createWindow() {
 
@@ -32,7 +32,7 @@ function createWindow() {
         icon: __dirname + '/icon.png'
     })
 
-    gameWindow.loadURL('http://localhost:5192/game.ru.html')
+    gameWindow.loadURL('http://localhost:5192/')
 
     //gameWindow.webContents.openDevTools()
 
@@ -117,7 +117,7 @@ app.on('ready', function() {
             app.exit(0);
         }
     } else {
-        var serve = serveStatic("./game/");
+        var serve = serveStatic("./game/", {'index': ['index.html']});
         var serveTZ = serveStatic(store.get('tzdir'));
 
         var server = http.createServer(function(req, res) {
@@ -183,13 +183,13 @@ app.on('ready', function() {
                 submenu: [{
                         label: 'admin',
                         click: function(menuItem, browserWindow, event) {
-                            browserWindow.loadURL('http://localhost:5192/game.ru.html?login=admin&password=123');
+                            browserWindow.loadURL('http://localhost:5192/?login=admin&password=123');
                         }
                     },
                     {
                         label: 'admin2',
                         click: function(menuItem, browserWindow, event) {
-                            browserWindow.loadURL('http://localhost:5192/game.ru.html?login=admin2&password=123');
+                            browserWindow.loadURL('http://localhost:5192/?login=admin2&password=123');
                         }
                     },
                 ]
