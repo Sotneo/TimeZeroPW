@@ -16,7 +16,7 @@ const Store = require('electron-store');
 const store = new Store();
 const { autoUpdater } = require("electron-updater")
 
-const serveFiles = ["/", "/servers.xml", "/logreader.swf", "/logreader.html", "/js/tz.js"];
+const serveFiles = ["/", "/index.html", "/servers.xml", "/logreader.swf", "/logreader.html", "/js/tz.js"];
 
 function createWindow() {
 
