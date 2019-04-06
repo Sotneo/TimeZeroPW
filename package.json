@@ -5,6 +5,10 @@
     "license": "MIT",
     "version": "1.0.3",
     "main": "./main.js",
+    "scripts": {
+      "start": "electron .",
+      "publish": "build -p always"
+    },
     "build": {
         "appId": "pw.timezero",
         "productName": "TimeZeroPW",

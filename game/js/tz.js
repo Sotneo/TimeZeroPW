@@ -30,7 +30,7 @@ function recieveFromFlash(data) {
 	else if (command == "dealer_sites") top.set_dealerlinks(ztmp[0]);
 	else if (command == "fullscreen") top.fullScreen(ztmp[0] == '1');
 	else if (command == "ME") document.title="["+arr[1]+"] "+arr[0];
-	else if (command == "restart_client") window.location.href = "index.html";
+	else if (command == "restart_client") {window.alert('Соединение отключено');/*window.location.href = "./";*/};
 	return true;
 }
 
