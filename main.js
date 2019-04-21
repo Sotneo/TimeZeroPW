@@ -5,16 +5,16 @@ const {
     BrowserWindow,
     dialog,
     shell
-} = require('electron')
-const path = require('path')
-const url = require('url')
+} = require('electron');
+const path = require('path');
+const url = require('url');
 const http = require('http');
 const finalhandler = require('finalhandler');
 const serveStatic = require('serve-static');
-const fs = require('fs')
+const fs = require('fs');
+const {autoUpdater} = require("electron-updater");
 const Store = require('electron-store');
 const store = new Store();
-const { autoUpdater } = require("electron-updater")
 
 const serveFiles = ["/", "/index.html", "/servers.xml", "/logreader.swf", "/logreader.html", "/js/tz.js"];
 
@@ -25,18 +25,18 @@ function createWindow() {
         height: 720,
         minWidth: 1004,
         minHeight: 460,
-        useContentSize: true,
+        //useContentSize: true,
         webPreferences: {
             plugins: true,
         },
         icon: __dirname + '/icon.png'
-    })
+    });
 
-    gameWindow.loadURL('http://localhost:5192/')
+    gameWindow.loadURL('http://localhost:5192/');
 
     //gameWindow.webContents.openDevTools()
 
-    gameWindow.on('closed', function() {
+    gameWindow.on('closed', function () {
         gameWindow = null
     })
 }
@@ -54,15 +54,15 @@ function createLogreader() {
         },
 
         icon: __dirname + '/icon.png'
-    })
+    });
 
-    logreaderWindow.loadURL('http://localhost:5192/logreader.html')
+    logreaderWindow.loadURL('http://localhost:5192/logreader.html');
 
     //gameWindow.webContents.openDevTools()
 
-    logreaderWindow.on('closed', function() {
+    logreaderWindow.on('closed', function () {
         logreaderWindow = null
-    })
+    });
     logreaderWindow.setMenu(null);
 }
 
@@ -78,8 +78,9 @@ function selectTZdir() {
     app.relaunch();
     app.exit(0);
 }
-app.on('ready', function() {
-	autoUpdater.checkForUpdatesAndNotify();
+
+app.on('ready', function () {
+    autoUpdater.checkForUpdatesAndNotify();
     if (!store.has('tzdir')) {
         if (fs.existsSync('C:\\Program Files (x86)\\TimeZero\\')) {
             store.set('tzdir', 'C:\\Program Files (x86)\\TimeZero\\');
@@ -92,12 +93,12 @@ app.on('ready', function() {
                 message: 'Не найден путь с установленной игрой.',
                 buttons: ['Указать путь', 'Скачать официальный клиент TimeZero', 'Выход']
             });
-            if (response == 0) {
+            if (response === 0) {
                 selectTZdir()
-            } else if (response == 1) {
+            } else if (response === 1) {
                 shell.openExternal('https://www.timezero.ru/download.ru.html');
                 app.exit(0);
-            } else if (response == 2) {
+            } else if (response === 2) {
                 app.exit(0);
             }
         }
@@ -108,23 +109,24 @@ app.on('ready', function() {
             message: 'tz.swf не найден.',
             buttons: ['Указать путь', 'Скачать официальный клиент TimeZero', 'Выход']
         });
-        if (response == 0) {
+        if (response === 0) {
             selectTZdir()
-        } else if (response == 1) {
+        } else if (response === 1) {
             shell.openExternal('https://www.timezero.ru/download.ru.html');
             app.exit(0);
-        } else if (response == 2) {
+        } else if (response === 2) {
             app.exit(0);
         }
     } else {
-        var serve = serveStatic("./game/", {'index': ['index.html']});
-        var serveTZ = serveStatic(store.get('tzdir'));
+        let serve = serveStatic("./game/", {'index': ['index.html']});
+        let serveTZ = serveStatic(store.get('tzdir'));
 
-        var server = http.createServer(function(req, res) {
-            var done = finalhandler(req, res);
+        let server = http.createServer(function (req, res) {
+            let done = finalhandler(req, res);
 
             let file = req.url.split('?')[0].split('#')[0];
-            if (serveFiles.includes(file)) {
+            if (file.indexOf('i/locations/') !== -1) {
+            } else if (serveFiles.includes(file)) {
                 serve(req, res, done);
             } else {
                 serveTZ(req, res, done);
@@ -134,61 +136,61 @@ app.on('ready', function() {
         server.listen(5192);
 
         let menu = Menu.buildFromTemplate([{
-                label: 'Клиент',
-                submenu: [{
-                        label: 'Новое окно',
-                        click: function() {
-                            createWindow();
-                        }
-                    },
-                    {
-                        label: 'Перезагрузка',
-                        role: 'reload',
-                    },
-                    {
-                        label: 'Принудительная перезагрузка',
-                        role: 'forcereload',
-                    },
-                    {
-                        type: 'separator'
-                    },
-                    {
-                        label: 'Полноэкранный режим',
-                        role: 'togglefullscreen'
-                    },
-                    {
-                        label: 'Всегда сверху',
-                        type: 'checkbox',
-                        checked: false,
-                        click: function(menuItem, browserWindow, event) {
-                            browserWindow.setAlwaysOnTop(menuItem.checked);
-                        }
-                    },
-                    {
-                        type: 'separator'
-                    }, {
-                        label: 'Путь к игре',
-                        click: function() {
-                            selectTZdir()
-                        }
-                    },
-                    {
-                        label: 'Инструменты разработчика',
-                        role: 'toggledevtools'
-                    },
-                ]
+            label: 'Клиент',
+            submenu: [{
+                label: 'Новое окно',
+                click: function () {
+                    createWindow();
+                }
             },
+                {
+                    label: 'Перезагрузка',
+                    role: 'reload',
+                },
+                {
+                    label: 'Принудительная перезагрузка',
+                    role: 'forcereload',
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    label: 'Полноэкранный режим',
+                    role: 'togglefullscreen'
+                },
+                {
+                    label: 'Всегда сверху',
+                    type: 'checkbox',
+                    checked: false,
+                    click: function (menuItem, browserWindow, event) {
+                        browserWindow.setAlwaysOnTop(menuItem.checked);
+                    }
+                },
+                {
+                    type: 'separator'
+                }, {
+                    label: 'Путь к игре',
+                    click: function () {
+                        selectTZdir()
+                    }
+                },
+                {
+                    label: 'Инструменты разработчика',
+                    role: 'toggledevtools'
+                },
+            ]
+        },
             {
                 label: 'Автологин',
                 submenu: [{
-                        label: 'admin',
-                        click: function(menuItem, browserWindow, event) {
-                            browserWindow.loadURL('http://localhost:5192/?login=admin&password=123');
-                        }
-                    },
+                    label: 'admin',
+                    click: function (menuItem, browserWindow, event) {
+                        browserWindow.loadURL('http://localhost:5192/?login=admin&password=123');
+                    }
+                },
                     {
                         label: 'admin2',
-                        click: function(menuItem, browserWindow, event) {
+                        click: function (menuItem, browserWindow, event) {
                             browserWindow.loadURL('http://localhost:5192/?login=admin2&password=123');
                         }
                     },
@@ -196,32 +198,32 @@ app.on('ready', function() {
             },
             {
                 label: 'Packetlogger',
-                click: function(menuItem, browserWindow, event) {
+                click: function (menuItem, browserWindow, event) {
                     createLogreader()
                 }
             }
-        ])
-        Menu.setApplicationMenu(menu)
+        ]);
+        Menu.setApplicationMenu(menu);
 
         createWindow();
     }
-})
+});
 
-app.on('window-all-closed', function() {
+app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') {
         app.quit()
     }
-})
+});
 
-app.on('activate', function() {
+app.on('activate', function () {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     //if (gameWindow === null) {
     //    createWindow()
     //  }
-})
+});
 
-const gotTheLock = app.requestSingleInstanceLock()
+const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
     app.quit()
@@ -231,7 +233,7 @@ if (!gotTheLock) {
     })
 }
 
-let pluginName
+let pluginName;
 switch (process.platform) {
     case 'win32':
         if (process.arch === 'x64') {
@@ -239,14 +241,14 @@ switch (process.platform) {
         } else {
             pluginName = 'pepflashplayer32.dll'
         }
-        break
+        break;
     case 'darwin':
         if (process.arch === 'x64') {
             pluginName = 'PepperFlashPlayer64.plugin'
         } else {
             pluginName = 'PepperFlashPlayer32.plugin'
         }
-        break
+        break;
     case 'linux':
         if (process.arch === 'x64') {
             pluginName = 'libpepflashplayer64.so'
@@ -256,4 +258,4 @@ switch (process.platform) {
         break
 }
 app.commandLine.appendSwitch('ppapi-flash-path', path.join((__dirname.includes(".asar") ? process.resourcesPath : __dirname), 'lib', pluginName));
-app.commandLine.appendSwitch('ppapi-flash-version', '32.0.0.156')
+app.commandLine.appendSwitch('ppapi-flash-version', '32.0.0.156');

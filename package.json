@@ -1,10 +1,15 @@
 {
-    "name": "TimeZeroPW",
+    "name": "timezeropw-client",
     "description": "TimeZeroPW client",
     "author": "ravoit",
     "license": "MIT",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "main": "./main.js",
+
+    "scripts": {
+        "run": "electron .",
+        "publish": "build -p always"
+    },
     "build": {
         "appId": "pw.timezero",
         "productName": "TimeZeroPW",

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SERVERS>
-	<s game="main.timezero.pw" domain="timezero.pw" desc="Main server" chat_log="0" version="108" cversion="7.0.1" prm="cachetrue" />
+	<s game="timezero.pw" domain="timezero.pw" desc="Main server" chat_log="0" version="108" cversion="7.0.1" prm="cachetrue" />
 </SERVERS>
