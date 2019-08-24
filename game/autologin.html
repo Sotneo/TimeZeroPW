@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Autologin</title>
+    <link rel="stylesheet" type="text/css" href="/custom.css"/>
+</head>
+<body>
+<a href="#" onclick="autologinClick(this)" data-login="admin" data-password="123">Admin</a>
+
+<script>
+    const ipc = require('electron').ipcRenderer;
+
+    function autologinClick(obj) {
+        let login = obj.dataset.login;
+        let password = obj.dataset.password;
+        console.log(ipc.sendSync('autologin', login, password));
+    }
+
+    const customTitlebar = require('custom-electron-titlebar');
+
+    new customTitlebar.Titlebar({
+        backgroundColor: customTitlebar.Color.fromHex('#333'),
+        menu: null
+    });
+</script>
+</body>
+</html>

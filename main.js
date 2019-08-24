@@ -4,7 +4,8 @@ const {
     Menu,
     BrowserWindow,
     dialog,
-    shell
+    shell,
+    ipcMain
 } = require('electron');
 const path = require('path');
 const url = require('url');
@@ -16,7 +17,68 @@ const {autoUpdater} = require("electron-updater");
 const Store = require('electron-store');
 const store = new Store();
 
-const serveFiles = ["/", "/index.html", "/servers.xml", "/logreader.swf", "/logreader.html", "/js/tz.js"];
+const serveFiles = ["/", "/index.html", "/servers.xml", "/autologin.html", "/custom.css"];
+
+let lastActiveWindow;
+let autologinWindow;
+
+const menu = Menu.buildFromTemplate([{
+    label: 'Клиент',
+    submenu: [{
+        label: 'Новое окно',
+        click: function () {
+            createWindow();
+        }
+    },
+        {
+            label: 'Перезагрузка',
+            role: 'reload',
+        },
+        {
+            label: 'Принудительная перезагрузка',
+            role: 'forcereload',
+        },
+        {
+            type: 'separator'
+        },
+        {
+            label: 'Полноэкранный режим',
+            role: 'togglefullscreen'
+        },
+        {
+            label: 'Всегда сверху',
+            type: 'checkbox',
+            checked: false,
+            click: function (menuItem, browserWindow, event) {
+                browserWindow.setAlwaysOnTop(menuItem.checked);
+            }
+        },
+        {
+            type: 'separator'
+        }, {
+            label: 'Путь к игре',
+            click: function () {
+                selectTZdir()
+            }
+        },
+        {
+            label: 'Инструменты разработчика',
+            role: 'toggledevtools'
+        },
+    ]
+}, {
+    label: 'Автологин',
+    click: function (menuItem, browserWindow, event) {
+        showAutologin(browserWindow);
+    }
+}
+]);
+Menu.setApplicationMenu(menu);
+
+ipcMain.on('autologin', (event, login, password) => {
+    tzAutologin(lastActiveWindow, login, password);
+    event.returnValue = 'L:' + login + "p:" + password;
+});
 
 function createWindow() {
 
@@ -28,46 +90,24 @@ function createWindow() {
         //useContentSize: true,
         webPreferences: {
             plugins: true,
+            nodeIntegration: true
         },
-        icon: __dirname + '/icon.png'
+        icon: __dirname + '/icon.png', frame: false
     });
 
     gameWindow.loadURL('http://localhost:5192/');
 
-    //gameWindow.webContents.openDevTools()
+    //gameWindow.webContents.openDevTools();
 
     gameWindow.on('closed', function () {
         gameWindow = null
-    })
-}
-
-function createLogreader() {
-
-    let logreaderWindow = new BrowserWindow({
-        title: 'Log Reader',
-        width: 800,
-        height: 920,
-        resizable: false,
-        useContentSize: true,
-        webPreferences: {
-            plugins: true,
-        },
-
-        icon: __dirname + '/icon.png'
     });
 
-    logreaderWindow.loadURL('http://localhost:5192/logreader.html');
-
-    //gameWindow.webContents.openDevTools()
-
-    logreaderWindow.on('closed', function () {
-        logreaderWindow = null
-    });
-    logreaderWindow.setMenu(null);
+    lastActiveWindow = gameWindow;
 }
 
 function selectTZdir() {
-    const pathArray = dialog.showOpenDialog({
+    const pathArray = dialog.showOpenDialogSync({
         properties: ['openDirectory'],
         title: 'Путь к папке с TimeZero'
     });
@@ -79,12 +119,54 @@ function selectTZdir() {
     app.exit(0);
 }
 
+function tzSetVar(browserWindow, variable, value) {
+    browserWindow.webContents.executeJavaScript('tz.SetVariable("' + variable + '","' + value + '");');
+}
+
+function tzAutologin(browserWindow, login, password) {
+    tzSetVar(browserWindow, "_level0.skin_login.mc_login.login.text", login);
+    tzSetVar(browserWindow, "_level0.skin_login.mc_login.psw.text", password);
+    tzSetVar(browserWindow, "_level0.skin_login.mc_login.btn_enter.releasing", "");
+}
+
+function showAutologin(browserWindow) {
+    if (autologinWindow === undefined || autologinWindow.isDestroyed()) {
+        autologinWindow = new BrowserWindow({
+            modal: true, show: false, frame: false,
+            webPreferences: {
+                nodeIntegration: true
+            }
+        });
+        autologinWindow.loadURL('http://localhost:5192/autologin.html');
+        autologinWindow.once('ready-to-show', () => {
+            autologinWindow.show();
+        });
+        autologinWindow.removeMenu();
+    }
+}
+
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+        type: 'info',
+        buttons: ['Restart', 'Later'],
+        title: 'Install Updates',
+        message: process.platform === 'win32' ? releaseNotes : releaseName,
+        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+    };
+
+    dialog.showMessageBox(dialogOpts, (response) => {
+        if (response === 0) {
+            autoUpdater.quitAndInstall();
+        }
+    });
+});
+
 app.on('ready', function () {
     autoUpdater.checkForUpdatesAndNotify();
     if (!store.has('tzdir')) {
         if (fs.existsSync('C:\\Program Files (x86)\\TimeZero\\')) {
             store.set('tzdir', 'C:\\Program Files (x86)\\TimeZero\\');
-        } else if (false && fs.existsSync('C:\\Program Files\\TimeZero\\')) {
+        } else if (fs.existsSync('C:\\Program Files\\TimeZero\\')) {
             store.set('tzdir', 'C:\\Program Files\\TimeZero\\');
         } else {
             const response = dialog.showMessageBox({
@@ -109,6 +191,7 @@ app.on('ready', function () {
             message: 'tz.swf не найден.',
             buttons: ['Указать путь', 'Скачать официальный клиент TimeZero', 'Выход']
         });
+
         if (response === 0) {
             selectTZdir()
         } else if (response === 1) {
@@ -135,75 +218,6 @@ app.on('ready', function () {
 
         server.listen(5192);
 
-        let menu = Menu.buildFromTemplate([{
-            label: 'Клиент',
-            submenu: [{
-                label: 'Новое окно',
-                click: function () {
-                    createWindow();
-                }
-            },
-                {
-                    label: 'Перезагрузка',
-                    role: 'reload',
-                },
-                {
-                    label: 'Принудительная перезагрузка',
-                    role: 'forcereload',
-                },
-                {
-                    type: 'separator'
-                },
-                {
-                    label: 'Полноэкранный режим',
-                    role: 'togglefullscreen'
-                },
-                {
-                    label: 'Всегда сверху',
-                    type: 'checkbox',
-                    checked: false,
-                    click: function (menuItem, browserWindow, event) {
-                        browserWindow.setAlwaysOnTop(menuItem.checked);
-                    }
-                },
-                {
-                    type: 'separator'
-                }, {
-                    label: 'Путь к игре',
-                    click: function () {
-                        selectTZdir()
-                    }
-                },
-                {
-                    label: 'Инструменты разработчика',
-                    role: 'toggledevtools'
-                },
-            ]
-        },
-            {
-                label: 'Автологин',
-                submenu: [{
-                    label: 'admin',
-                    click: function (menuItem, browserWindow, event) {
-                        browserWindow.loadURL('http://localhost:5192/?login=admin&password=123');
-                    }
-                },
-                    {
-                        label: 'admin2',
-                        click: function (menuItem, browserWindow, event) {
-                            browserWindow.loadURL('http://localhost:5192/?login=admin2&password=123');
-                        }
-                    },
-                ]
-            },
-            {
-                label: 'Packetlogger',
-                click: function (menuItem, browserWindow, event) {
-                    createLogreader()
-                }
-            }
-        ]);
-        Menu.setApplicationMenu(menu);
 
         createWindow();
     }

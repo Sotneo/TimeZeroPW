@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SERVERS>
-	<s game="timezero.pw" domain="timezero.pw" desc="Main server" chat_log="0" version="108" cversion="7.0.1" prm="cachetrue" />
+	<s game="city3.timezero.pw" domain="timezero.pw" desc="Demo server" chat_log="0" version="108" cversion="7.0.1" prm="cachetrue"  />
+	<s game="195.133.74.10" domain="timezero.ru" desc="Funzero" chat_log="0" version="108" cversion="7.0.1" prm="cachetrue" />
+	<s game="127.0.0.1" domain="timezero.ru" desc="Local server" chat_log="0" version="108" cversion="7.0.1" prm="cachetrue" />
 </SERVERS>
