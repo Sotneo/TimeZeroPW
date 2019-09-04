@@ -112,7 +112,7 @@ function createWindow() {
 
     gameWindow.loadURL('http://localhost:5192/');
 
-    gameWindow.webContents.openDevTools();
+    //gameWindow.webContents.openDevTools();
 
     gameWindow.on('closed', function () {
         gameWindow = null
@@ -161,7 +161,7 @@ function showAutologin(browserWindow) {
 
         autologinWindow.loadURL('http://localhost:5192/autologin.html');
 
-        autologinWindow.webContents.openDevTools();
+        //autologinWindow.webContents.openDevTools();
         autologinWindow.once('ready-to-show', () => {
             autologinWindow.show();
         });
