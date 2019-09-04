@@ -1,3 +1,5 @@
+'use strict';
+
 const {
     electron,
     app,
@@ -15,9 +17,10 @@ const serveStatic = require('serve-static');
 const fs = require('fs');
 const {autoUpdater} = require("electron-updater");
 const Store = require('electron-store');
-const store = new Store();
+const config = new Store();
+const autologinStore = new Store({name: "autologin"});
 
-const serveFiles = ["/", "/index.html", "/servers.xml", "/autologin.html", "/custom.css"];
+const serveFiles = ["/", "/index.html", "/servers.xml", "/autologin.html", "/client.css", "/client.js", "/autologin.js"];
 
 let lastActiveWindow;
 let autologinWindow;
@@ -73,11 +76,23 @@ const menu = Menu.buildFromTemplate([{
     }
 }
 ]);
+
 Menu.setApplicationMenu(menu);
 
-ipcMain.on('autologin', (event, login, password) => {
-    tzAutologin(lastActiveWindow, login, password);
-    event.returnValue = 'L:' + login + "p:" + password;
+ipcMain.on('autologinDo', (event, login) => {
+    tzAutologin(lastActiveWindow, login, autologinStore.get(login));
+    event.returnValue = '';
+});
+ipcMain.on('autologinAdd', (event, login, password) => {
+    autologinStore.set(login, password);
+    event.returnValue = autologinStore.store;
+});
+ipcMain.on('autologinRemove', (event, login) => {
+    autologinStore.delete(login);
+    event.returnValue = autologinStore.store;
+});
+ipcMain.on('autologinLoad', (event) => {
+    event.returnValue = autologinStore.store;
 });
 
 function createWindow() {
@@ -97,10 +112,17 @@ function createWindow() {
 
     gameWindow.loadURL('http://localhost:5192/');
 
-    //gameWindow.webContents.openDevTools();
+    gameWindow.webContents.openDevTools();
 
     gameWindow.on('closed', function () {
         gameWindow = null
+    });
+    gameWindow.on('focus', function () {
+        lastActiveWindow = gameWindow;
+        gameWindow.webContents.executeJavaScript('titlebar.updateTitle(pageTitle+" (активное окно)");');
+    });
+    gameWindow.on('blur', function () {
+        gameWindow.webContents.executeJavaScript('titlebar.updateTitle(pageTitle);');
     });
 
     lastActiveWindow = gameWindow;
@@ -113,31 +135,33 @@ function selectTZdir() {
     });
 
     if (pathArray !== undefined) {
-        store.set('tzdir', pathArray[0]);
+        config.set('tzdir', pathArray[0]);
     }
     app.relaunch();
     app.exit(0);
 }
 
-function tzSetVar(browserWindow, variable, value) {
-    browserWindow.webContents.executeJavaScript('tz.SetVariable("' + variable + '","' + value + '");');
-}
-
 function tzAutologin(browserWindow, login, password) {
-    tzSetVar(browserWindow, "_level0.skin_login.mc_login.login.text", login);
-    tzSetVar(browserWindow, "_level0.skin_login.mc_login.psw.text", password);
-    tzSetVar(browserWindow, "_level0.skin_login.mc_login.btn_enter.releasing", "");
+    browserWindow.webContents.executeJavaScript('TZautologin("' + login + '","' + password + '");');
 }
 
 function showAutologin(browserWindow) {
     if (autologinWindow === undefined || autologinWindow.isDestroyed()) {
         autologinWindow = new BrowserWindow({
+            width: 600,
+            height: 600,
+            resizable: false,
+            minimizable: false,
+            maximizable: false,
             modal: true, show: false, frame: false,
             webPreferences: {
                 nodeIntegration: true
             }
         });
+
         autologinWindow.loadURL('http://localhost:5192/autologin.html');
+
+        autologinWindow.webContents.openDevTools();
         autologinWindow.once('ready-to-show', () => {
             autologinWindow.show();
         });
@@ -163,11 +187,11 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 
 app.on('ready', function () {
     autoUpdater.checkForUpdatesAndNotify();
-    if (!store.has('tzdir')) {
+    if (!config.has('tzdir')) {
         if (fs.existsSync('C:\\Program Files (x86)\\TimeZero\\')) {
-            store.set('tzdir', 'C:\\Program Files (x86)\\TimeZero\\');
+            config.set('tzdir', 'C:\\Program Files (x86)\\TimeZero\\');
         } else if (fs.existsSync('C:\\Program Files\\TimeZero\\')) {
-            store.set('tzdir', 'C:\\Program Files\\TimeZero\\');
+            config.set('tzdir', 'C:\\Program Files\\TimeZero\\');
         } else {
             const response = dialog.showMessageBox({
                 title: 'Путь к папке с TimeZero',
@@ -184,7 +208,7 @@ app.on('ready', function () {
                 app.exit(0);
             }
         }
-    } else if (!fs.existsSync(store.get('tzdir') + '//tz.swf')) {
+    } else if (!fs.existsSync(config.get('tzdir') + '//tz.swf')) {
         const response = dialog.showMessageBox({
             title: 'Путь к папке с TimeZero',
             type: 'warning',
@@ -202,7 +226,7 @@ app.on('ready', function () {
         }
     } else {
         let serve = serveStatic("./game/", {'index': ['index.html']});
-        let serveTZ = serveStatic(store.get('tzdir'));
+        let serveTZ = serveStatic(config.get('tzdir'));
 
         let server = http.createServer(function (req, res) {
             let done = finalhandler(req, res);

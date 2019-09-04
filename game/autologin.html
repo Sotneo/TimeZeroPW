@@ -1,27 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Autologin</title>
-    <link rel="stylesheet" type="text/css" href="/custom.css"/>
+    <title>TimeZero - автовход</title>
+    <link rel="stylesheet" href="client.css">
 </head>
 <body>
-<a href="#" onclick="autologinClick(this)" data-login="admin" data-password="123">Admin</a>
+<div id="autologinContainer">
+    <div id="autologinUsers">
 
-<script>
-    const ipc = require('electron').ipcRenderer;
+    </div>
 
-    function autologinClick(obj) {
-        let login = obj.dataset.login;
-        let password = obj.dataset.password;
-        console.log(ipc.sendSync('autologin', login, password));
-    }
+    <form id="autoLoginAddForm" onsubmit="event.preventDefault();autologinAdd();">
+        <input id="autoLoginAddLogin" placeholder="Логин">
+        <input id="autoLoginAddPassword" type="password" placeholder="Пароль">
+        <button type="submit">Добавить</button>
+    </form>
+</div>
 
+<script src="autologin.js"></script>
+<script type="text/javascript">
     const customTitlebar = require('custom-electron-titlebar');
 
-    new customTitlebar.Titlebar({
-        backgroundColor: customTitlebar.Color.fromHex('#333'),
-        menu: null
+    const titlebar = new customTitlebar.Titlebar({
+        backgroundColor: customTitlebar.Color.fromHex('#47413a'),
+        menu: null,
+        minimizable: false,
+        maximizable: false
     });
 </script>
 </body>
