@@ -1,5 +1,5 @@
-
 const swfobject = require('swfobject');
+const remote = require('electron').remote;
 
 const html = document.querySelector('html');
 const containerDiv = document.getElementById("container");
@@ -440,4 +440,8 @@ function TZbrowserData(s) {
 function TZcomplainMessage(s) {
     var tzDiv = document.getElementById("tz");
     tzDiv.complainMessage(s);
+}
+
+function toggleChat() {
+    containerDiv.classList.toggle('chat');
 }

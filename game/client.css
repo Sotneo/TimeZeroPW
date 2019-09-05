@@ -13,13 +13,13 @@ html {
     grid-template-columns: 100%;
 }
 
-#container.chat {
+#container.chat:not(.nochat) {
     grid-template-areas: "game location" "chat location";
     grid-template-rows: calc((100vw - 300px) / 1004 * 440) auto;
     grid-template-columns: 1fr 300px;
 }
 
-#container.chat #chat, #container.chat #location {
+#container.chat #chat:not(.nochat), #container.chat #location:not(.nochat) {
     display: flex;
 }
 

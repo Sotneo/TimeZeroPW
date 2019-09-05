@@ -29,7 +29,7 @@ const menu = Menu.buildFromTemplate([{
     label: 'Клиент',
     submenu: [{
         label: 'Новое окно',
-        click: function () {
+        click: function (menuItem, browserWindow, event) {
             createWindow();
         }
     },
@@ -50,17 +50,25 @@ const menu = Menu.buildFromTemplate([{
         },
         {
             label: 'Всегда сверху',
-            type: 'checkbox',
-            checked: false,
             click: function (menuItem, browserWindow, event) {
-                browserWindow.setAlwaysOnTop(menuItem.checked);
+                browserWindow.setAlwaysOnTop(browserWindow.isAlwaysOnTop());
             }
         },
         {
             type: 'separator'
-        }, {
+        },
+        {
+            label: 'Скрыть/показать чат',
+            click: function (menuItem, browserWindow, event) {
+                browserWindow.webContents.executeJavaScript('toggleChat()');
+            }
+        },
+        {
+            type: 'separator'
+        },
+        {
             label: 'Путь к игре',
-            click: function () {
+            click: function (menuItem, browserWindow, event) {
                 selectTZdir()
             }
         },
