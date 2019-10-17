@@ -120,6 +120,7 @@ function createWindow() {
 
     gameWindow.loadURL('http://localhost:5192/');
 
+
     //gameWindow.webContents.openDevTools();
 
     gameWindow.on('closed', function () {
@@ -150,7 +151,7 @@ function selectTZdir() {
 }
 
 function tzAutologin(browserWindow, login, password) {
-    browserWindow.webContents.executeJavaScript('TZautologin("' + login + '","' + password + '");');
+    browserWindow.webContents.executeJavaScript('autologinLogin="' + login + '"; autologinPassword="' + password + '";RestartClient();');
 }
 
 function showAutologin(browserWindow) {
