@@ -321,7 +321,7 @@ function DrawLocationUsers() {
 }
 
 function ChatS(arr) {
-    AddChatLine(arr[0], arr[1], arr[2], 0, arr[3]);
+    AddChatLine(arr[0], arr[1], arr[2] === "1", 0, arr[3] === "1");
 }
 
 function escapeRegExp(string) {
