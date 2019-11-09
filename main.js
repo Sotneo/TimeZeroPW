@@ -20,8 +20,6 @@ const Store = require('electron-store');
 const config = new Store();
 const autologinStore = new Store({name: "autologin"});
 
-const serveFiles = ["/", "/index.html", "/servers.xml", "/autologin.html", "/client.css", "/client.js", "/autologin.js"];
-
 let lastActiveWindow;
 let autologinWindow;
 
@@ -115,7 +113,9 @@ function createWindow() {
             plugins: true,
             nodeIntegration: true
         },
-        icon: __dirname + '/icon.png', frame: false
+        icon: __dirname + '/icon.png',
+
+        useElectronNet: true
     });
 
     gameWindow.loadURL('http://localhost:5192/');
@@ -128,10 +128,10 @@ function createWindow() {
     });
     gameWindow.on('focus', function () {
         lastActiveWindow = gameWindow;
-        gameWindow.webContents.executeJavaScript('titlebar.updateTitle(pageTitle+" (активное окно)");');
+        gameWindow.webContents.executeJavaScript('document.title=pageTitle+" (активное окно)";');
     });
     gameWindow.on('blur', function () {
-        gameWindow.webContents.executeJavaScript('titlebar.updateTitle(pageTitle);');
+        gameWindow.webContents.executeJavaScript('document.title=pageTitle;');
     });
 
     lastActiveWindow = gameWindow;
@@ -162,10 +162,11 @@ function showAutologin(browserWindow) {
             resizable: false,
             minimizable: false,
             maximizable: false,
-            modal: true, show: false, frame: false,
+            modal: true, show: false,
             webPreferences: {
                 nodeIntegration: true
-            }
+            },
+            icon: __dirname + '/icon.png'
         });
 
         autologinWindow.loadURL('http://localhost:5192/autologin.html');
@@ -175,6 +176,8 @@ function showAutologin(browserWindow) {
             autologinWindow.show();
         });
         autologinWindow.removeMenu();
+    } else {
+        autologinWindow.focus();
     }
 }
 
@@ -194,67 +197,6 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     });
 });
 
-app.on('ready', function () {
-    autoUpdater.checkForUpdatesAndNotify();
-    if (!config.has('tzdir')) {
-        if (fs.existsSync('C:\\Program Files (x86)\\TimeZero\\')) {
-            config.set('tzdir', 'C:\\Program Files (x86)\\TimeZero\\');
-        } else if (fs.existsSync('C:\\Program Files\\TimeZero\\')) {
-            config.set('tzdir', 'C:\\Program Files\\TimeZero\\');
-        } else {
-            const response = dialog.showMessageBox({
-                title: 'Путь к папке с TimeZero',
-                type: 'question',
-                message: 'Не найден путь с установленной игрой.',
-                buttons: ['Указать путь', 'Скачать официальный клиент TimeZero', 'Выход']
-            });
-            if (response === 0) {
-                selectTZdir()
-            } else if (response === 1) {
-                shell.openExternal('https://www.timezero.ru/download.ru.html');
-                app.exit(0);
-            } else if (response === 2) {
-                app.exit(0);
-            }
-        }
-    } else if (!fs.existsSync(config.get('tzdir') + '//tz.swf')) {
-        const response = dialog.showMessageBox({
-            title: 'Путь к папке с TimeZero',
-            type: 'warning',
-            message: 'tz.swf не найден.',
-            buttons: ['Указать путь', 'Скачать официальный клиент TimeZero', 'Выход']
-        });
-
-        if (response === 0) {
-            selectTZdir()
-        } else if (response === 1) {
-            shell.openExternal('https://www.timezero.ru/download.ru.html');
-            app.exit(0);
-        } else if (response === 2) {
-            app.exit(0);
-        }
-    } else {
-        let serve = serveStatic("./game/", {'index': ['index.html']});
-        let serveTZ = serveStatic(config.get('tzdir'));
-
-        let server = http.createServer(function (req, res) {
-            let done = finalhandler(req, res);
-
-            let file = req.url.split('?')[0].split('#')[0];
-            if (file.indexOf('i/locations/') !== -1) {
-            } else if (serveFiles.includes(file)) {
-                serve(req, res, done);
-            } else {
-                serveTZ(req, res, done);
-            }
-        });
-
-        server.listen(5192);
-
-
-        createWindow();
-    }
-});
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') {
@@ -277,7 +219,73 @@ if (!gotTheLock) {
 } else {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
         createWindow();
-    })
+    });
+
+    app.on('ready', function () {
+        autoUpdater.checkForUpdatesAndNotify();
+        if (!config.has('tzdir')) {
+            if (fs.existsSync('C:\\Program Files (x86)\\TimeZero\\')) {
+                config.set('tzdir', 'C:\\Program Files (x86)\\TimeZero\\');
+            } else if (fs.existsSync('C:\\Program Files\\TimeZero\\')) {
+                config.set('tzdir', 'C:\\Program Files\\TimeZero\\');
+            } else {
+                const response = dialog.showMessageBox({
+                    title: 'Путь к папке с TimeZero',
+                    type: 'question',
+                    message: 'Не найден путь с установленной игрой.',
+                    buttons: ['Указать путь', 'Скачать официальный клиент TimeZero', 'Выход']
+                });
+                if (response === 0) {
+                    selectTZdir()
+                } else if (response === 1) {
+                    shell.openExternal('https://www.timezero.ru/download.ru.html');
+                    app.exit(0);
+                } else if (response === 2) {
+                    app.exit(0);
+                }
+            }
+        } else if (!fs.existsSync(config.get('tzdir') + '//tz.swf')) {
+            const response = dialog.showMessageBox({
+                title: 'Путь к папке с TimeZero',
+                type: 'warning',
+                message: 'tz.swf не найден.',
+                buttons: ['Указать путь', 'Скачать официальный клиент TimeZero', 'Выход']
+            });
+
+            if (response === 0) {
+                selectTZdir()
+            } else if (response === 1) {
+                shell.openExternal('https://www.timezero.ru/download.ru.html');
+                app.exit(0);
+            } else if (response === 2) {
+                app.exit(0);
+            }
+        } else {
+            let serve = serveStatic("./game/", {'index': ['index.html']});
+            let serveTZ = serveStatic(config.get('tzdir'));
+            let serveFiles = [''];
+
+            fs.readdirSync("./game/").forEach(file => {
+                serveFiles.push(file);
+            });
+
+            let server = http.createServer(function (req, res) {
+                let done = finalhandler(req, res);
+
+                let file = req.url.split('?')[0].split('#')[0].substr(1);
+                if (file.indexOf('i/locations/') !== -1) {
+                } else if (serveFiles.includes(file)) {
+                    serve(req, res, done);
+                } else {
+                    serveTZ(req, res, done);
+                }
+            });
+
+            server.listen(5192);
+
+            createWindow();
+        }
+    });
 }
 
 let pluginName;
