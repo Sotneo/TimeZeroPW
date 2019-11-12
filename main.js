@@ -274,6 +274,7 @@ if (!gotTheLock) {
 
                 let file = req.url.split('?')[0].split('#')[0].substr(1);
                 if (file.indexOf('i/locations/') !== -1) {
+                    serve(req, res, done);
                 } else if (serveFiles.includes(file)) {
                     serve(req, res, done);
                 } else {
