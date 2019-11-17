@@ -113,12 +113,12 @@ function rankIndex(absrank) {
     return i;
 }
 
-var flashvars =
+const flashvars =
     {
         "language": "ru",
         "WORLD_ID": "1"
     };
-var params =
+const params =
     {
         "swLiveConnect": "true",
         "allowScriptAccess": "always",
@@ -126,6 +126,16 @@ var params =
     };
 
 swfobject.embedSWF("tz.swf", "tz", "100%", "100%", "8", null, flashvars, params);
+
+const ro = new ResizeObserver(entries => {
+    for (let entry of entries) {
+        let cs = window.getComputedStyle(entry.target);
+        TZresizeStage(cs.width);
+        if (entry.target.handleResize)
+            entry.target.handleResize(entry);
+    }
+});
+
 /*
     var so = new SWFObject("tz.swf?vers=" + vers, "tz", "100%", "100%", "8", "#333333");
     so.addVariable("language", "ru");
@@ -186,12 +196,13 @@ function recieveFromFlash(data) {
             break;
         case "fullscreen":
             tzDiv = document.getElementById("tz");
-            if (autologinLogin !== "" && autologinPassword !== ""){
+            if (autologinLogin !== "" && autologinPassword !== "") {
                 TZautologin(autologinLogin, autologinPassword);
 
                 autologinLogin = "";
                 autologinPassword = "";
             }
+            ro.observe(tzDiv);
             break;
         default:
             console.log("UHANDLED " + command);
@@ -445,6 +456,10 @@ function TZbrowserData(s) {
 
 function TZcomplainMessage(s) {
     tzDiv.complainMessage(s);
+}
+
+function TZresizeStage(width) {
+    tzDiv.resizeStage(width);
 }
 
 function toggleChat() {
