@@ -166,6 +166,7 @@ function showAutologin(browserWindow) {
             webPreferences: {
                 nodeIntegration: true
             },
+            alwaysOnTop: true,
             icon: __dirname + '/icon.png'
         });
 

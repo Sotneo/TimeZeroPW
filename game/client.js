@@ -202,7 +202,9 @@ function recieveFromFlash(data) {
                 autologinLogin = "";
                 autologinPassword = "";
             }
+
             ro.observe(tzDiv);
+            TZresizeStage(tzDiv.width);
             break;
         default:
             console.log("UHANDLED " + command);
