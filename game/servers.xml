@@ -2,6 +2,6 @@
 <SERVERS>
     <s game="main.timezero.pw" domain="timezero.pw" desc="Main server" chat_log="0" version="108" cversion="7.0.1"
        prm="cachetrue"/>
-    <s game="main2.timezero.pw" domain="timezero.pw" desc="Local server" chat_log="0" version="108" cversion="7.0.1"
+    <s game="localhost" domain="timezero.pw" desc="Local server" chat_log="0" version="108" cversion="7.0.1"
        prm="cachetrue"/>
 </SERVERS>

@@ -345,42 +345,56 @@ function AddChatLine(message, color, always, gs, hmtl) {
     let result = "";
 
     let messageId = 0;
+    let isPrivate = false;
+    let isToMe = false;
+    let logins = [];
+    let isFromMe = false;
+    let chatTime = "";
+
     if (message.substr(8, 1) === ":") {
         messageId = parseInt(message.substr(0, 8), 16);
         message = message.substr(9);
     }
+    if (!always) {
 
-    let isPrivate = message.includes(" private [" + chatLogin + "]");
-    let isToMe = message.includes(" to [" + chatLogin + "]");
+        isPrivate = message.includes(" private [" + chatLogin + "]");
+        isToMe = message.includes(" to [" + chatLogin + "]");
 
-    let logins = message.substr(5).match(/\[[^\]]*]/g);
+        logins = message.substr(5).match(/\[[^\]]*]/g);
 
-    let fromLogin = "";
-    for (const tempLoginTag of logins) {
-        let tempLogin = tempLoginTag.slice(1, -1);
-        if (fromLogin === "") {
-            fromLogin = tempLogin;
+        let fromLogin = "";
+        if (logins !== null) {
+            for (const tempLoginTag of logins) {
+                let tempLogin = tempLoginTag.slice(1, -1);
+                if (fromLogin === "") {
+                    fromLogin = tempLogin;
+                }
+                message = message.replace(new RegExp(escapeRegExp(" private " + tempLoginTag), "g"), "<b class='chatLoginPrivate'> private <span class='chatLogin' onclick='WriteTo(\"" + tempLogin + "\")' oncontextmenu='TZgetUserInfo(\"" + tempLogin + "\")'>" + tempLoginTag + "</span></b>");
+                message = message.replace(new RegExp(escapeRegExp(" to " + tempLoginTag), "g"), "<b> to <span class='chatLogin' onclick='WriteTo(\"" + tempLogin + "\")' oncontextmenu='TZgetUserInfo(\"" + tempLogin + "\")'>" + tempLoginTag + "</span></b>");
+                message = message.replace(new RegExp(escapeRegExp(" " + tempLoginTag), "g"), " <b class='chatLogin' onclick='WriteTo(\"" + tempLogin + "\")' oncontextmenu='TZgetUserInfo(\"" + tempLogin + "\")'>" + tempLoginTag + "</b>");
+            }
         }
-        message = message.replace(new RegExp(escapeRegExp(" private " + tempLoginTag), "g"), "<b class='chatLoginPrivate'> private <span class='chatLogin' onclick='WriteTo(\"" + tempLogin + "\")' oncontextmenu='TZgetUserInfo(\"" + tempLogin + "\")'>" + tempLoginTag + "</span></b>");
-        message = message.replace(new RegExp(escapeRegExp(" to " + tempLoginTag), "g"), "<b> to <span class='chatLogin' onclick='WriteTo(\"" + tempLogin + "\")' oncontextmenu='TZgetUserInfo(\"" + tempLogin + "\")'>" + tempLoginTag + "</span></b>");
-        message = message.replace(new RegExp(escapeRegExp(" " + tempLoginTag), "g"), " <b class='chatLogin' onclick='WriteTo(\"" + tempLogin + "\")' oncontextmenu='TZgetUserInfo(\"" + tempLogin + "\")'>" + tempLoginTag + "</b>");
+        isFromMe = fromLogin === chatLogin;
+
+        chatTime = message.substr(0, 5);
+        message = message.substr(5);
     }
 
     smileList.forEach(function (smile) {
         message = message.replace(new RegExp(':' + smile + ':', "g"), "<img src='./i/smile/" + smile + ".gif' alt=''>");
     });
 
-    let isFromMe = fromLogin === chatLogin;
-
     result += "<div class='chatMessage " + (always ? "always" : "") + " " + (isFromMe ? "fromme" : "") + " " + (isToMe ? "tome" : "") + " " + (isPrivate ? "private" : "") + "'>";
-    result += "<span class='chaTtime'>" + message.substr(0, 5) + "</span> <span class='color-" + color + "'>" + message.substr(5) + "</span>";
+    result += "<span class='chatTime'>" + chatTime + "</span> <span class='color-" + color + "'>" + message + "</span>";
     result += "</div>";
 
-    if (always) {
+    /*if (always) {
         chatMessagesDiv.innerHTML = result + chatMessagesDiv.innerHTML;
     } else {
         chatMessagesDiv.innerHTML += result;
-    }
+    }*/
+
+    chatMessagesDiv.innerHTML += result;
     chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
 
     if (isPrivate) {

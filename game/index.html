@@ -13,13 +13,13 @@
     <div id="chat">
         <div id="chatMessages" class="scroll">
         </div>
-        <form id="chatForm" onsubmit="event.preventDefault();SendMessage();">
+        <form id="chatForm" class="noselect" onsubmit="event.preventDefault();SendMessage();">
             <input id="chatFormMessage" placeholder="Сообщение в чат">
             <button id="chatFormButton" type="submit">Написать</button>
         </form>
     </div>
     <div id="location">
-        <div id="locationName">
+        <div id="locationName" class="noselect">
         </div>
         <div id="locationUsers" class="scroll">
         </div>
