@@ -15,6 +15,8 @@ const locationDiv = document.getElementById("location");
 const locationNameDiv = document.getElementById("locationName");
 const locationUsersDiv = document.getElementById("locationUsers");
 
+let skipResize = false;
+
 let pageTitle = document.title;
 
 let locationName;
@@ -129,6 +131,7 @@ swfobject.embedSWF("tz.swf", "tz", "100%", "100%", "8", null, flashvars, params)
 
 const ro = new ResizeObserver(entries => {
     for (let entry of entries) {
+        if (skipResize) continue;
         let cs = window.getComputedStyle(entry.target);
         TZresizeStage(cs.width);
         if (entry.target.handleResize)
@@ -150,15 +153,19 @@ const ro = new ResizeObserver(entries => {
         so.addVariable("root_password", reg_url['password']);
     }*/
 
-document.addEventListener('visibilitychange', function () {
+//document.addEventListener('visibilitychange', unfreeze);
+
+function unfreeze() {
     if (!document.hidden) {
-        html.style.width = "99.9%";
+        skipResize = true;
+        html.style.width = "100.01%";
 
         setTimeout(function () {
             html.style.width = "100%";
+            skipResize = false;
         }, 1000);
     }
-});
+}
 
 function recieveFromFlash(data) {
 

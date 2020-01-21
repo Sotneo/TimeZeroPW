@@ -4,4 +4,6 @@
        prm="cachetrue"/>
     <s game="localhost" domain="timezero.pw" desc="Local server" chat_log="0" version="108" cversion="7.0.1"
        prm="cachetrue"/>
+    <s game="194.87.163.18" domain="timezero.pw" desc="Funzero server" chat_log="0" version="108" cversion="7.0.1"
+       prm="cachetrue"/>
 </SERVERS>

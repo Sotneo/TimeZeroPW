@@ -129,6 +129,7 @@ function createWindow() {
     gameWindow.on('focus', function () {
         lastActiveWindow = gameWindow;
         gameWindow.webContents.executeJavaScript('document.title=pageTitle+" (активное окно)";');
+        gameWindow.webContents.executeJavaScript('unfreeze();');
     });
     gameWindow.on('blur', function () {
         gameWindow.webContents.executeJavaScript('document.title=pageTitle;');
@@ -152,6 +153,7 @@ function selectTZdir() {
 
 function tzAutologin(browserWindow, login, password) {
     browserWindow.webContents.executeJavaScript('autologinLogin="' + login + '"; autologinPassword="' + password + '";RestartClient();');
+    browserWindow.focus();
 }
 
 function showAutologin(browserWindow) {
