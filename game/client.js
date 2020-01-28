@@ -433,7 +433,7 @@ function WriteTo(login) {
     } else if (curMessage.includes(private)) {
         curMessage = curMessage.replace(private, to);
     } else {
-        curMessage = to + ' ' + curMessage;
+        curMessage = to + curMessage;
     }
 
     chatFormMessage.value = curMessage;
