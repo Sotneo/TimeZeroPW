@@ -7,7 +7,7 @@
   "main": "./main.js",
   "scripts": {
     "run": "electron .",
-    "release": "electron-builder build -p always"
+    "release": "electron-builder build -p always -mwl"
   },
   "build": {
     "appId": "pw.timezero",
