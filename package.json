@@ -3,7 +3,7 @@
   "description": "TimeZeroPW client",
   "author": "ravoit",
   "license": "MIT",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "./main.js",
   "scripts": {
     "run": "electron .",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "electron-store": "latest",
-    "electron-updater": "latest",
+    "electron-updater": "^4.0.0",
     "finalhandler": "latest",
     "serve-static": "latest",
     "swfobject": "latest"

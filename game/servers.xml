@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SERVERS>
-    <s game="localhost" domain="timezero.pw" desc="Local server" chat_log="0" version="108" cversion="7.0.1"
-       prm="cachetrue"/>
     <s game="45.142.213.163" domain="timezero.ru" desc="Funzero server" chat_log="0" version="108" cversion="7.0.1"
        prm="cachetrue"/>
-    <s game="s1.timezero.pw" domain="timezero.pw" desc="Main server" chat_log="0" version="108" cversion="7.0.1"
+    <s game="s1.timezero.pw" domain="timezero.pw" desc="PW server" chat_log="0" version="108" cversion="7.0.1"
+       prm="cachetrue"/>
+    <s game="localhost" domain="timezero.pw" desc="Local server" chat_log="0" version="108" cversion="7.0.1"
        prm="cachetrue"/>
 </SERVERS>
