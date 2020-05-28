@@ -292,29 +292,11 @@ if (!gotTheLock) {
     });
 }
 
-let pluginName;
-switch (process.platform) {
-    case 'win32':
-        if (process.arch === 'x64') {
-            pluginName = 'pepflashplayer64.dll'
-        } else {
-            pluginName = 'pepflashplayer32.dll'
-        }
-        break;
-    case 'darwin':
-        if (process.arch === 'x64') {
-            pluginName = 'PepperFlashPlayer64.plugin'
-        } else {
-            pluginName = 'PepperFlashPlayer32.plugin'
-        }
-        break;
-    case 'linux':
-        if (process.arch === 'x64') {
-            pluginName = 'libpepflashplayer64.so'
-        } else {
-            pluginName = 'libpepflashplayer32.so'
-        }
-        break
+try {
+    const flashPath = app.getPath('pepperFlashSystemPlugin');
+    app.commandLine.appendSwitch('ppapi-flash-path', flashPath);
+} catch (e) {
+    shell.openExternal('https://get.adobe.com/ru/flashplayer/otherversions/');
+    app.exit(0);
+    return;
 }
-app.commandLine.appendSwitch('ppapi-flash-path', path.join((__dirname.includes(".asar") ? process.resourcesPath : __dirname), 'lib', pluginName));
-app.commandLine.appendSwitch('ppapi-flash-version', '32.0.0.156');

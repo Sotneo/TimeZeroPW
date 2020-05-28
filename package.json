@@ -3,7 +3,7 @@
   "description": "TimeZeroPW client",
   "author": "ravoit",
   "license": "MIT",
-  "version": "1.1.11",
+  "version": "1.2.0",
   "main": "./main.js",
   "scripts": {
     "run": "electron .",
@@ -12,29 +12,17 @@
   "build": {
     "appId": "pw.timezero",
     "productName": "TimeZeroPW",
-    "extraFiles": "game/**/*",
-    "files": "!lib/",
-    "win": {
-      "extraResources": "lib/pepflashplayer32.dll",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "ia32"
-          ]
-        }
-      ]
-    }
+    "extraFiles": "game/**/*"
   },
   "devDependencies": {
-    "electron": "^6.0.0",
-    "electron-builder": "^21.2.0"
+    "electron": "latest",
+    "electron-builder": "latest"
   },
   "dependencies": {
-    "electron-store": "^5.1.0",
-    "electron-updater": "^4.0.0",
+    "electron-store": "latest",
+    "electron-updater": "latest",
     "finalhandler": "latest",
     "serve-static": "latest",
-    "swfobject": "^2.2.1"
+    "swfobject": "latest"
   }
 }
