@@ -1,13 +1,14 @@
 language: node_js
 node_js: "10"
 
+env:
+  - ELECTRON_CACHE=$HOME/.cache/electron
+  - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+
 matrix:
   include:
     - os: osx
       osx_image: xcode10.2
-      env:
-        - ELECTRON_CACHE=$HOME/.cache/electron
-        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
     - os: linux
     - os: windows
 
