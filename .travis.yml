@@ -27,6 +27,8 @@ script:
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
 
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
 
 addons:
   apt:
