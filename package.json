@@ -12,11 +12,15 @@
   "build": {
     "appId": "pw.timezero",
     "productName": "TimeZeroPW",
-    "extraFiles": "game/**/*"
+    "extraFiles": "game/**/*",
+    "linux": {
+      "category": "game",
+      "target": ["Appimage","tar.gz"]
+    }
   },
   "devDependencies": {
     "electron": "latest",
-    "electron-builder": "latest"
+    "electron-builder": "^22.8.0"
   },
   "dependencies": {
     "electron-store": "latest",
