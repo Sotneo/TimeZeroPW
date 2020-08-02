@@ -15,12 +15,15 @@
     "extraFiles": "game/**/*",
     "linux": {
       "category": "game",
-      "target": ["Appimage","tar.gz"]
+      "target": [
+        "Appimage",
+        "tar.gz"
+      ]
     }
   },
   "devDependencies": {
     "electron": "latest",
-    "electron-builder": "^22.8.0"
+    "electron-builder": "latest"
   },
   "dependencies": {
     "electron-store": "latest",
