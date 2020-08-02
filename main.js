@@ -292,8 +292,32 @@ if (!gotTheLock) {
     });
 }
 
+function getLinuxFlashPath() {
+    let flashPath = '';
+    if (fs.existsSync('/usr/lib/pepperflashplugin-nonfree/')) {
+        flashPath = '/usr/lib/pepperflashplugin-nonfree/libpepflashplayer.so';
+    } else if (fs.existsSync('/usr/lib/pepflashplugin-installer/')) {
+        flashPath = '/usr/lib/pepflashplugin-installer/libpepflashplayer.so';
+    } else if (fs.existsSync('/usr/lib/pepper-plugins/')) {
+        flashPath = '/usr/lib/pepper-plugins/libpepflashplayer.so';
+    }
+    return flashPath;
+}
+
 try {
-    const flashPath = app.getPath('pepperFlashSystemPlugin');
+    let flashPath = '';
+    switch (process.platform) {
+        case 'win32':
+            flashPath = app.getPath('pepperFlashSystemPlugin');
+            break
+        case 'darwin':
+            flashPath = "/Library/Internet"+" "+"Plug-Ins/PepperFlashPlayer/PepperFlashPlayer.plugin/Contents/MacOS/PepperFlashPlayer";
+            break
+        case 'linux':
+            app.commandLine.appendSwitch('--no-sandbox'); //work around, Electron bug https://github.com/electron/electron/issues/20309
+            flashPath = getLinuxFlashPath();
+            break
+    }
     app.commandLine.appendSwitch('ppapi-flash-path', flashPath);
 } catch (e) {
     shell.openExternal('https://get.adobe.com/ru/flashplayer/otherversions/');
