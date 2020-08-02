@@ -311,7 +311,7 @@ try {
             flashPath = app.getPath('pepperFlashSystemPlugin');
             break
         case 'darwin':
-            flashPath = "/Library/Internet"+" "+"Plug-Ins/PepperFlashPlayer/PepperFlashPlayer.plugin/Contents/MacOS/PepperFlashPlayer";
+            flashPath = "/Library/Internet\ Plug-Ins/PepperFlashPlayer/PepperFlashPlayer.plugin/Contents/MacOS/PepperFlashPlayer";
             break
         case 'linux':
             app.commandLine.appendSwitch('--no-sandbox'); //work around, Electron bug https://github.com/electron/electron/issues/20309
